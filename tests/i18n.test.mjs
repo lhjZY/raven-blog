@@ -35,7 +35,9 @@ test("Chinese pages retain their locale and have matching English pages", () => 
 
 test("Chinese pagination, dates, feeds and search indexes use the correct locale", () => {
   const home = readFileSync(new URL("zh/index.html", dist), "utf8");
-  assert.ok(home.includes(`href="${base}/zh/rss.xml"`));
+  const feedUrl = home.match(/<link[^>]*type="application\/rss\+xml"[^>]*href="([^"]+)"/)?.[1];
+  assert.ok(feedUrl, "The RSS feed remains discoverable without a visible icon");
+  assert.equal(new URL(feedUrl).pathname, `${base}/zh/rss.xml`);
   const posts = readFileSync(new URL("zh/posts/index.html", dist), "utf8");
   assert.match(posts, new RegExp(`href="${base}/zh/posts/2/?"`));
   const post = readFileSync(
