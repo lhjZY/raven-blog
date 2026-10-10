@@ -1,7 +1,6 @@
 ---
 import { getCollection } from "astro:content";
 import { getRelativeLocaleUrl } from "astro:i18n";
-import IconRss from "@/assets/icons/IconRss.svg";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
@@ -37,20 +36,6 @@ const homePath = getRelativeLocaleUrl(locale, "");
       <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
         {t.home.greeting}
       </h1>
-      <a
-        target="_blank"
-        href={getRelativeLocaleUrl(locale, "rss.xml").replace(/\/$/, "")}
-        class="inline-block"
-        aria-label={t.a11y.rssFeed}
-        title={t.a11y.rssFeed}
-      >
-        <IconRss
-          width={20}
-          height={20}
-          class="stroke-accent scale-125 stroke-3 rtl:-rotate-90"
-        />
-        <span class="sr-only">{t.a11y.rssFeed}</span>
-      </a>
 
       <p>
         {t.home.description}
