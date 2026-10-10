@@ -153,13 +153,13 @@ test("GitHub Pages links and assets stay under the repository base and resolve",
     const html = readFileSync(new URL(page, dist), "utf8").replace(/<!--[\s\S]*?-->/g, "");
     const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
     assert.ok(canonical, page);
-    if (page === "index.html" || new URL(canonical).origin === "https://lhjzy.github.io") {
-      assert.ok(canonical.startsWith(`https://lhjzy.github.io${base}/`), page);
+    if (page === "index.html" || new URL(canonical).origin === "https://liuhuanjun.top") {
+      assert.ok(canonical.startsWith(`https://liuhuanjun.top${base}/`), page);
     }
-    const pageUrl = new URL(page, `https://lhjzy.github.io${base}/`);
+    const pageUrl = new URL(page, `https://liuhuanjun.top${base}/`);
     for (const [, href] of html.matchAll(/(?:href|src)="([^"#?]+)(?:[?#][^"]*)?"/g)) {
       const url = new URL(href, pageUrl);
-      if (url.origin !== "https://lhjzy.github.io") continue;
+      if (url.origin !== "https://liuhuanjun.top") continue;
       assert.ok(url.pathname === base || url.pathname.startsWith(`${base}/`), `${page}: ${href}`);
       const path = decodeURI(url.pathname.slice(base.length)).replace(/^\/|\/$/g, "");
       assert.ok(
@@ -175,7 +175,7 @@ test("GitHub Pages links and assets stay under the repository base and resolve",
     assert.ok(search.includes(`data-bundle-path="${base}/pagefind/"`));
     const feed = readFileSync(new URL(`${locale}rss.xml`, dist), "utf8");
     for (const [, link] of feed.matchAll(/<link>([^<]+)<\/link>/g)) {
-      assert.ok(link.startsWith(`https://lhjzy.github.io${base}/${locale}`), link);
+      assert.ok(link.startsWith(`https://liuhuanjun.top${base}/${locale}`), link);
     }
   }
 });

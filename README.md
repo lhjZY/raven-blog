@@ -1,6 +1,8 @@
 ## A blog for myself
 
-GitHub Pages: https://lhjzy.github.io/raven-blog/
+GitHub Pages: https://liuhuanjun.top/raven-blog/
+
+`https://lhjzy.github.io/raven-blog/` 会沿用账户现有的自定义域名，自动跳转到上述地址。
 
 推送到 `main` 后，`.github/workflows/deploy.yml` 自动安装依赖、检查代码、构建双语页面和搜索索引，再部署 `dist/`。也可以在 Actions 页面手动运行部署。仓库的 Settings → Pages → Source 使用 GitHub Actions。
 
