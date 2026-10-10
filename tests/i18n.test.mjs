@@ -4,6 +4,7 @@ import test from "node:test";
 import { parseFrontmatter } from "@astrojs/markdown-remark";
 
 const dist = new URL("../dist/", import.meta.url);
+const base = "/raven-blog";
 
 test("Chinese pages retain their locale and have matching English pages", () => {
   const pages = readdirSync(new URL("zh/", dist), { recursive: true }).filter((path) =>
@@ -20,8 +21,9 @@ test("Chinese pages retain their locale and have matching English pages", () => 
     const englishPage = page === "404/index.html" ? "404.html" : page;
     assert.ok(existsSync(new URL(englishPage, dist)), `Missing English page for ${page}`);
 
-    for (const [, href] of html.matchAll(/href="(\/zh(?:\/[^"#?]*)?)(?:[?#][^"]*)?"/g)) {
-      const path = new URL(href, "http://localhost").pathname.replace(/\/$/, "");
+    for (const [, href] of html.matchAll(/href="([^"#?]+)(?:[?#][^"]*)?"/g)) {
+      if (!href.startsWith(`${base}/zh/`)) continue;
+      const path = new URL(href, "http://localhost").pathname.slice(base.length).replace(/\/$/, "");
       assert.ok(
         existsSync(new URL(`${path.slice(1)}/index.html`, dist)) ||
           existsSync(new URL(path.slice(1), dist)),
@@ -33,19 +35,19 @@ test("Chinese pages retain their locale and have matching English pages", () => 
 
 test("Chinese pagination, dates, feeds and search indexes use the correct locale", () => {
   const home = readFileSync(new URL("zh/index.html", dist), "utf8");
-  assert.match(home, /href="\/zh\/rss\.xml"/);
+  assert.ok(home.includes(`href="${base}/zh/rss.xml"`));
   const posts = readFileSync(new URL("zh/posts/index.html", dist), "utf8");
-  assert.match(posts, /href="\/zh\/posts\/2\/?"/);
+  assert.match(posts, new RegExp(`href="${base}/zh/posts/2/?"`));
   const post = readFileSync(
     new URL("zh/posts/dynamic-og-image-generation-in-astropaper-blog-posts/index.html", dist),
     "utf8",
   );
   assert.match(post, /2026年6月3日/);
   const tags = readFileSync(new URL("zh/tags/docs/index.html", dist), "utf8");
-  assert.match(tags, /href="\/zh\/tags\/docs\/2\/?"/);
+  assert.match(tags, new RegExp(`href="${base}/zh/tags/docs/2/?"`));
   const rss = readFileSync(new URL("zh/rss.xml", dist), "utf8");
   assert.match(rss, /<link>[^<]+\/zh\/posts\//);
-  assert.doesNotMatch(rss, /<link>[^<]+\.dev\/posts\//);
+  assert.doesNotMatch(rss, /<link>[^<]+\/raven-blog\/posts\//);
   const index = JSON.parse(readFileSync(new URL("pagefind/pagefind-entry.json", dist), "utf8"));
   assert.deepEqual(Object.keys(index.languages).sort(), ["en", "zh"]);
 });
@@ -106,7 +108,7 @@ test("Migrated posts have complete English counterparts and stay in their locale
         assert.doesNotMatch(article, /\p{Script=Han}/u, slug);
       }
       const switchTag = html.match(/<a\b[^>]*hreflang="(?:en|zh)"[^>]*>/)?.[0];
-      const counterpart = locale === "en" ? "/zh/" : "/";
+      const counterpart = locale === "en" ? `${base}/zh/` : `${base}/`;
       assert.ok(switchTag?.includes(`href="${counterpart}posts/obsidian/${slug}`), slug);
 
       const postPages = readdirSync(new URL(`${prefix}posts/`, dist), { recursive: true }).filter(
@@ -143,4 +145,37 @@ test("Migrated posts have complete English counterparts and stay in their locale
 
   const index = JSON.parse(readFileSync(new URL("pagefind/pagefind-entry.json", dist), "utf8"));
   assert.equal(index.languages.en.page_count, index.languages.zh.page_count);
+});
+
+test("GitHub Pages links and assets stay under the repository base and resolve", () => {
+  const pages = readdirSync(dist, { recursive: true }).filter((path) => path.endsWith(".html"));
+  for (const page of pages) {
+    const html = readFileSync(new URL(page, dist), "utf8").replace(/<!--[\s\S]*?-->/g, "");
+    const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+    assert.ok(canonical, page);
+    if (page === "index.html" || new URL(canonical).origin === "https://lhjzy.github.io") {
+      assert.ok(canonical.startsWith(`https://lhjzy.github.io${base}/`), page);
+    }
+    const pageUrl = new URL(page, `https://lhjzy.github.io${base}/`);
+    for (const [, href] of html.matchAll(/(?:href|src)="([^"#?]+)(?:[?#][^"]*)?"/g)) {
+      const url = new URL(href, pageUrl);
+      if (url.origin !== "https://lhjzy.github.io") continue;
+      assert.ok(url.pathname === base || url.pathname.startsWith(`${base}/`), `${page}: ${href}`);
+      const path = decodeURI(url.pathname.slice(base.length)).replace(/^\/|\/$/g, "");
+      assert.ok(
+        existsSync(new URL(path || "index.html", dist)) ||
+          existsSync(new URL(`${path}/index.html`, dist)) ||
+          existsSync(new URL(`${path}.html`, dist)),
+        `Missing resource ${href} on ${page}`,
+      );
+    }
+  }
+  for (const locale of ["", "zh/"]) {
+    const search = readFileSync(new URL(`${locale}search/index.html`, dist), "utf8");
+    assert.ok(search.includes(`data-bundle-path="${base}/pagefind/"`));
+    const feed = readFileSync(new URL(`${locale}rss.xml`, dist), "utf8");
+    for (const [, link] of feed.matchAll(/<link>([^<]+)<\/link>/g)) {
+      assert.ok(link.startsWith(`https://lhjzy.github.io${base}/${locale}`), link);
+    }
+  }
 });

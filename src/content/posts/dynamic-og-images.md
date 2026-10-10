@@ -14,7 +14,8 @@ description: New feature in AstroPaper v1.4.0, introducing dynamic OG image gene
 
 New feature in AstroPaper v1.4.0, introducing dynamic OG image generation for blog posts.
 
-![Dynamic OG image generation in AstroPaper blog posts](/posts/dynamic-og-image-generation-in-astropaper-blog-posts/index.png)
+<!-- This image is generated during the build, so it is a browser URL rather than a source import. -->
+<img src="./index.png" alt="Dynamic OG image generation in AstroPaper blog posts" />
 
 ## Table of contents
 
