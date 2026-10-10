@@ -1,0 +1,80 @@
+@import "tailwindcss";
+@import "./theme.css";
+@import "./typography.css";
+@import "rehype-callouts/theme/obsidian";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@layer base {
+  * {
+    @apply border-border outline-accent/75;
+    scrollbar-width: auto;
+    scrollbar-color: var(--color-muted) transparent;
+  }
+  a,
+  button,
+  #main-content {
+    @apply outline-accent outline-offset-1 focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-dashed;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+body {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Match raven-site's landscape and central fade to keep text readable. */
+.site-scene {
+  position: absolute;
+  inset: 0 0 auto;
+  width: 100%;
+  aspect-ratio: 1672 / 941;
+  min-height: 220px;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.site-scene::before,
+.site-scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.site-scene::before {
+  background: var(--scene-image) center top / cover no-repeat;
+  filter: grayscale(1);
+  opacity: 0.3;
+}
+
+.site-scene::after {
+  background:
+    linear-gradient(to bottom, transparent 15%, var(--background) 94%),
+    radial-gradient(ellipse 380px 500px at 50% 38%, var(--background) 22%, transparent 100%);
+}
+
+[data-theme="dark"] .site-scene::before {
+  filter: saturate(0.45);
+  opacity: 0.75;
+}
+
+@utility max-w-app {
+  @apply max-w-3xl;
+}
+
+@utility app-layout {
+  @apply max-w-app mx-auto w-full px-4;
+}
+
+@utility active-nav {
+  @apply underline decoration-wavy decoration-2 underline-offset-8;
+}
+
+:target {
+  scroll-margin-block: 1rem;
+}
