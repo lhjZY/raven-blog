@@ -1,13 +1,18 @@
 ---
+import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 import { getRelativeLocaleUrl } from "astro:i18n";
+import ravenBranch from "@/assets/raven-branch-empty.png";
+import perchedRaven from "@/assets/raven-perched.png";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Socials from "@/components/Socials.astro";
 import Card from "@/components/Card.astro";
+import ProjectCard from "@/components/ProjectCard.astro";
 import LinkButton from "@/components/LinkButton.astro";
+import { getProjects } from "@/data/projects";
 import { getSortedPosts } from "@/utils/getSortedPosts";
 import { useTranslations } from "@/i18n";
 import config from "@/config";
@@ -19,8 +24,7 @@ const t = useTranslations(locale);
 
 const posts = await getCollection("posts");
 const sortedPosts = getSortedPosts(posts, locale);
-const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
-const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
+const projects = getProjects(locale);
 const homePath = getRelativeLocaleUrl(locale, "");
 ---
 
@@ -33,23 +37,37 @@ const homePath = getRelativeLocaleUrl(locale, "");
     class="app-layout my-1"
   >
     <section id="hero" class="border-border border-b pt-8 pb-6">
-      <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
-        {t.home.greeting}
-      </h1>
+      <div class="branch-wrap" aria-hidden="true">
+        <Image
+          src={ravenBranch}
+          alt=""
+          width={620}
+          widths={[360, 620, 1240]}
+          sizes="(max-width: 652px) calc(100vw - 32px), 620px"
+          loading="eager"
+          class="branch"
+        />
+        <Image
+          src={perchedRaven}
+          alt=""
+          width={150}
+          densities={[1, 2]}
+          loading="eager"
+          class="perched-raven"
+        />
+      </div>
+      {
+        t.home.greeting.trim() && (
+          <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
+            {t.home.greeting}
+          </h1>
+        )
+      }
 
       <p>
         {t.home.description}
       </p>
-      <p class="mt-2">
-        {t.home.docsBefore}{" "}
-        <LinkButton
-          class="hover:text-accent underline decoration-dashed underline-offset-4"
-          href="https://github.com/satnaing/astro-paper#readme"
-        >
-          README
-        </LinkButton>{" "}
-        {t.home.docsAfter}
-      </p>
+      <p class="mt-2"></p>
       {
         socials.length > 0 && (
           <div class="mt-4 flex max-sm:flex-col sm:items-center">
@@ -62,35 +80,32 @@ const homePath = getRelativeLocaleUrl(locale, "");
       }
     </section>
 
-    {
-      featuredPosts.length > 0 && (
-        <section
-          id="featured"
-          class:list={[
-            "pt-12 pb-6",
-            { "border-border border-b": recentPosts.length > 0 },
-          ]}
-        >
-          <h2 class="text-2xl font-semibold tracking-wide">
-            {t.home.featured}
-          </h2>
-          <ul>
-            {featuredPosts.map(data => (
-              <Card variant="h3" {...data} />
-            ))}
-          </ul>
-        </section>
-      )
-    }
+    <section
+      id="projects"
+      class:list={[
+        "pt-12 pb-6",
+        { "border-border border-b": sortedPosts.length > 0 },
+      ]}
+    >
+      <h2 class="text-2xl font-semibold tracking-wide">
+        {t.home.projects}
+      </h2>
+      <p class="text-muted-foreground mt-2 text-sm">
+        {t.home.projectsDescription}
+      </p>
+      <ul class="mt-3">
+        {projects.map(project => <ProjectCard {...project} />)}
+      </ul>
+    </section>
 
     {
-      recentPosts.length > 0 && (
+      sortedPosts.length > 0 && (
         <section id="recent-posts" class="pt-12 pb-6">
           <h2 class="text-2xl font-semibold tracking-wide">
             {t.home.recentPosts}
           </h2>
           <ul>
-            {recentPosts.slice(0, postsConfig.perIndex).map(data => (
+            {sortedPosts.slice(0, postsConfig.perIndex).map(data => (
               <Card variant="h3" {...data} />
             ))}
           </ul>
@@ -107,6 +122,39 @@ const homePath = getRelativeLocaleUrl(locale, "");
   </main>
   <Footer />
 </Layout>
+
+<style>
+  .branch-wrap {
+    position: relative;
+    width: min(100%, 620px);
+    margin: 0 auto 2rem;
+  }
+
+  .branch {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* Anchor the feet to the middle-right branch; blending removes the source image's white canvas. */
+  .perched-raven {
+    position: absolute;
+    width: 24.2%;
+    height: auto;
+    left: 59%;
+    top: 1.5%;
+    mix-blend-mode: multiply;
+  }
+
+  :global([data-theme="dark"]) .branch,
+  :global([data-theme="dark"]) .perched-raven {
+    filter: invert(1);
+  }
+
+  :global([data-theme="dark"]) .perched-raven {
+    mix-blend-mode: screen;
+  }
+</style>
 
 <script>
   document.addEventListener("astro:page-load", () => {

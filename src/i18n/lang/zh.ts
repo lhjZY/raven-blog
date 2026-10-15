@@ -34,13 +34,14 @@ export default {
     pageLabel: "第 {{page}} 页",
   },
   home: {
-    greeting: "你好",
+    greeting: "",
     description:
-      "AstroPaper 是一款简洁、响应式、注重无障碍体验和搜索引擎优化的 Astro 博客主题。它遵循最佳实践，开箱即用，默认支持明暗主题，也可以配置更多配色方案。",
-    docsBefore: "阅读博客文章，或查看",
-    docsAfter: "了解更多。",
+      "你好,我是Leo,一名软件工程师,构思绝妙的点子并将其变为现实，是我热情所在。我热衷于打造能帮助自己和他人提高效率、享受创造过程的工具。",
+    docsBefore: "",
+    docsAfter: "",
     socialLinks: "社交链接",
-    featured: "精选文章",
+    projects: "我的项目",
+    projectsDescription: "为自己的阅读、写作与日常工作打造的小工具。",
     recentPosts: "最新文章",
     allPosts: "全部文章",
   },
@@ -72,7 +73,8 @@ export default {
     searchTitle: "搜索",
     searchDesc: "搜索文章……",
     searchDevWarning: "开发模式提示",
-    searchDevDescription: "开发模式下，请至少构建一次项目，以生成文章搜索索引。",
+    searchDevDescription:
+      "开发模式下，请至少构建一次项目，以生成文章搜索索引。",
   },
   a11y: {
     skipToContent: "跳转到正文",

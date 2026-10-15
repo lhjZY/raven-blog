@@ -1,0 +1,47 @@
+---
+import { Image } from "astro:assets";
+import type { LocalizedProject } from "@/data/projects";
+
+type Props = LocalizedProject;
+
+const { name, icon, kind, status, tagline, href } = Astro.props;
+const Wrapper = href ? "a" : "div";
+---
+
+<li>
+  <Wrapper href={href} class:list={["flex gap-3 py-3", { group: href }]}>
+    <Image
+      src={icon}
+      alt=""
+      width={28}
+      densities={[1, 2]}
+      class="project-icon mt-0.5 size-7 shrink-0"
+    />
+    <div class="min-w-0 flex-1">
+      <div class="flex items-baseline gap-3">
+        <h3
+          class="text-accent text-lg font-medium decoration-dashed underline-offset-4 group-hover:underline"
+        >
+          {name}
+        </h3>
+        <span class="text-muted-foreground truncate text-xs">{kind}</span>
+        <span class="text-muted-foreground ms-auto shrink-0 text-xs">
+          {status}
+        </span>
+      </div>
+      <p class="text-muted-foreground mt-0.5 text-sm">{tagline}</p>
+    </div>
+  </Wrapper>
+</li>
+
+<style>
+  /* Icons are black artwork on a white canvas; blend the canvas away like the hero illustration. */
+  .project-icon {
+    mix-blend-mode: multiply;
+  }
+
+  :global([data-theme="dark"]) .project-icon {
+    filter: invert(1);
+    mix-blend-mode: screen;
+  }
+</style>

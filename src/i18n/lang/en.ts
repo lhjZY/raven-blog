@@ -34,13 +34,15 @@ export default {
     pageLabel: "page {{page}}",
   },
   home: {
-    greeting: "Mingalaba",
+    greeting: "",
     description:
-      "AstroPaper is a minimal, responsive, accessible and SEO-friendly Astro blog theme. This theme follows best practices and provides accessibility out of the box. Light and dark mode are supported by default. Moreover, additional color schemes can also be configured.",
-    docsBefore: "Read the blog posts or check",
-    docsAfter: "for more info.",
+      "Hello, I'm Leo, a software engineer. Coming up with brilliant ideas and turning them into reality is my passion. I'm eager to build tools that help myself and others improve efficiency and enjoy the creative process.",
+    docsBefore: "",
+    docsAfter: "",
     socialLinks: "Social Links",
-    featured: "Featured",
+    projects: "Projects",
+    projectsDescription:
+      "Small tools I build for my own reading, writing and daily work.",
     recentPosts: "Recent Posts",
     allPosts: "All Posts",
   },

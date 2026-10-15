@@ -37,7 +37,8 @@ export interface UIStrings {
     docsBefore: string;
     docsAfter: string;
     socialLinks: string;
-    featured: string;
+    projects: string;
+    projectsDescription: string;
     recentPosts: string;
     allPosts: string;
   };
