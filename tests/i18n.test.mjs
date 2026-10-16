@@ -4,7 +4,7 @@ import test from "node:test";
 import { parseFrontmatter } from "@astrojs/markdown-remark";
 
 const dist = new URL("../dist/", import.meta.url);
-const base = "/raven-blog";
+const base = "";
 
 test("Chinese pages retain their locale and have matching English pages", () => {
   const pages = readdirSync(new URL("zh/", dist), { recursive: true }).filter((path) =>
@@ -49,7 +49,7 @@ test("Chinese pagination, dates, feeds and search indexes use the correct locale
   assert.match(tags, new RegExp(`href="${base}/zh/tags/docs/2/?"`));
   const rss = readFileSync(new URL("zh/rss.xml", dist), "utf8");
   assert.match(rss, /<link>[^<]+\/zh\/posts\//);
-  assert.doesNotMatch(rss, /<link>[^<]+\/raven-blog\/posts\//);
+  assert.doesNotMatch(rss, /<link>https:\/\/liuhuanjun\.top\/posts\//);
   const index = JSON.parse(readFileSync(new URL("pagefind/pagefind-entry.json", dist), "utf8"));
   assert.deepEqual(Object.keys(index.languages).sort(), ["en", "zh"]);
 });
@@ -149,7 +149,7 @@ test("Migrated posts have complete English counterparts and stay in their locale
   assert.equal(index.languages.en.page_count, index.languages.zh.page_count);
 });
 
-test("GitHub Pages links and assets stay under the repository base and resolve", () => {
+test("Custom-domain links and assets resolve from the site root", () => {
   const pages = readdirSync(dist, { recursive: true }).filter((path) => path.endsWith(".html"));
   for (const page of pages) {
     const html = readFileSync(new URL(page, dist), "utf8").replace(/<!--[\s\S]*?-->/g, "");
@@ -162,6 +162,7 @@ test("GitHub Pages links and assets stay under the repository base and resolve",
     for (const [, href] of html.matchAll(/(?:href|src)="([^"#?]+)(?:[?#][^"]*)?"/g)) {
       const url = new URL(href, pageUrl);
       if (url.origin !== "https://liuhuanjun.top") continue;
+      assert.ok(!url.pathname.startsWith("/raven-blog/"), `${page}: ${href}`);
       assert.ok(url.pathname === base || url.pathname.startsWith(`${base}/`), `${page}: ${href}`);
       const path = decodeURI(url.pathname.slice(base.length)).replace(/^\/|\/$/g, "");
       assert.ok(
