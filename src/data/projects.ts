@@ -1,7 +1,5 @@
 import type { ImageMetadata } from "astro";
-import ravenTranslateIcon from "@/assets/projects/raven-translate.png";
 import ravenTranslateNativeIcon from "@/assets/projects/raven-translate-native.png";
-import ravenTodoIcon from "@/assets/projects/raven-todo.png";
 
 type Locale = "zh" | "en";
 
@@ -24,27 +22,10 @@ export type LocalizedProject = Omit<Project, "copy"> & ProjectCopy;
 
 const projects: Project[] = [
   {
-    id: "raven-translate",
-    name: "Raven-Translate",
-    icon: ravenTranslateIcon,
-    copy: {
-      zh: {
-        kind: "浏览器扩展",
-        status: "持续迭代",
-        tagline: "划词与整页翻译，支持 Google 与自定义 AI 引擎。",
-      },
-      en: {
-        kind: "Browser extension",
-        status: "Active",
-        tagline:
-          "Selection and full-page translation with Google or your own AI.",
-      },
-    },
-  },
-  {
     id: "raven-translate-native",
     name: "Raven-Translate Native",
     icon: ravenTranslateNativeIcon,
+    href: "https://lhjzy.github.io/raven-translate-native-site/",
     copy: {
       zh: {
         kind: "macOS 应用",
@@ -54,25 +35,7 @@ const projects: Project[] = [
       en: {
         kind: "macOS app",
         status: "In progress",
-        tagline:
-          "Translate, proofread and parse long sentences on the desktop.",
-      },
-    },
-  },
-  {
-    id: "raven-todo",
-    name: "Raven Todo",
-    icon: ravenTodoIcon,
-    copy: {
-      zh: {
-        kind: "Web 应用",
-        status: "v0.1",
-        tagline: "列表、看板与时间线视图，数据只保存在本地浏览器。",
-      },
-      en: {
-        kind: "Web app",
-        status: "v0.1",
-        tagline: "List, board and timeline views; data stays in your browser.",
+        tagline: "Translate, proofread and parse long sentences on the desktop.",
       },
     },
   },
