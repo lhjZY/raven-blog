@@ -6,20 +6,30 @@ import { parseFrontmatter } from "@astrojs/markdown-remark";
 const dist = new URL("../dist/", import.meta.url);
 const base = "";
 
-test("Chinese pages retain their locale and have matching English pages", () => {
-  const pages = readdirSync(new URL("zh/", dist), { recursive: true }).filter((path) =>
-    path.endsWith(".html"),
-  );
+test("Pages retain their locale and language switches resolve without requiring translations", () => {
+  const pages = readdirSync(dist, { recursive: true }).filter((path) => path.endsWith(".html"));
   assert.ok(pages.length > 30, "Build both languages before running this check");
 
   for (const page of pages) {
-    const html = readFileSync(new URL(`zh/${page}`, dist), "utf8");
-    assert.match(html, /<html\b[^>]*lang="zh"/, page);
-    const languageLink = html.match(/<a\b[^>]*hreflang="en"[^>]*>/)?.[0];
-    assert.ok(languageLink, `Missing English switch on ${page}`);
+    const locale = page.startsWith("zh/") ? "zh" : "en";
+    const otherLocale = locale === "zh" ? "en" : "zh";
+    const html = readFileSync(new URL(page, dist), "utf8");
+    assert.match(html, new RegExp(`<html\\b[^>]*lang="${locale}"`), page);
+    const languageLink = html.match(new RegExp(`<a\\b[^>]*hreflang="${otherLocale}"[^>]*>`))?.[0];
+    assert.ok(languageLink, `Missing language switch on ${page}`);
     assert.match(languageLink, /data-astro-reload/, page);
-    const englishPage = page === "404/index.html" ? "404.html" : page;
-    assert.ok(existsSync(new URL(englishPage, dist)), `Missing English page for ${page}`);
+    const languageHref = languageLink.match(/href="([^"]+)"/)?.[1];
+    assert.ok(languageHref, `Missing language destination on ${page}`);
+    const destination = decodeURI(new URL(languageHref, "https://liuhuanjun.top").pathname).replace(
+      /^\/|\/$/g,
+      "",
+    );
+    assert.equal(destination.startsWith("zh/") || destination === "zh", otherLocale === "zh", page);
+    assert.ok(
+      existsSync(new URL(`${destination || "."}/index.html`, dist)) ||
+        existsSync(new URL(`${destination}.html`, dist)),
+      `Broken language switch ${languageHref} on ${page}`,
+    );
 
     for (const [, href] of html.matchAll(/href="([^"#?]+)(?:[?#][^"]*)?"/g)) {
       if (!href.startsWith(`${base}/zh/`)) continue;
@@ -54,99 +64,68 @@ test("Chinese pagination, dates, feeds and search indexes use the correct locale
   assert.deepEqual(Object.keys(index.languages).sort(), ["en", "zh"]);
 });
 
-test("Migrated posts have complete English counterparts and stay in their locale", () => {
+test("Personal articles publish independently and stay in their locale", () => {
   const source = new URL("../src/content/posts/obsidian/", import.meta.url);
-  const files = readdirSync(source).filter((file) => file.endsWith(".md"));
-  assert.equal(files.length, 8);
-  assert.deepEqual(readdirSync(new URL("_en/", source)).sort(), files.sort());
+  const files = readdirSync(source, { recursive: true }).filter((file) => file.endsWith(".md"));
 
   for (const file of files) {
-    const chinese = parseFrontmatter(readFileSync(new URL(file, source), "utf8"));
-    const english = parseFrontmatter(readFileSync(new URL(`_en/${file}`, source), "utf8"));
-    assert.equal(chinese.frontmatter.lang, "zh", file);
-    assert.equal(english.frontmatter.lang, "en", file);
-    assert.equal(english.frontmatter.draft, false, file);
-    assert.equal(chinese.frontmatter.draft, false, file);
-    assert.deepEqual(english.frontmatter.tags, chinese.frontmatter.tags, file);
-    assert.deepEqual(english.frontmatter.pubDatetime, chinese.frontmatter.pubDatetime, file);
-    assert.doesNotMatch(english.content, /\p{Script=Han}/u, file);
+    const { frontmatter } = parseFrontmatter(readFileSync(new URL(file, source), "utf8"));
+    const locale = frontmatter.lang;
+    assert.ok(["en", "zh"].includes(locale), file);
+    const prefix = locale === "zh" ? "zh/" : "";
+    const slug = file.replace(/^_en\//, "").replace(/\.md$/, "");
+    const postPath = `${prefix}posts/obsidian/${slug}`;
+    const postPage = new URL(`${postPath}/index.html`, dist);
+    const feed = readFileSync(new URL(`${prefix}rss.xml`, dist), "utf8");
 
-    // Text diagrams and comments are translated; executable examples keep their behavior.
-    const examples = [chinese, english].map(({ content }) =>
-      [...content.matchAll(/```(c|go|js|jsx|sql|yaml|json|bash|sh)\n([\s\S]*?)```/g)].map(
-        ([, language, code]) => [
-          language,
-          code
-            .split("\n")
-            .filter((line) => !line.trim().startsWith("//"))
-            .map((line) => line.trim())
-            .filter(Boolean)
-            .join("\n"),
-        ],
-      ),
-    );
-    assert.deepEqual(examples[1], examples[0], `Changed executable example in ${file}`);
-
-    const slug = file.replace(/\.md$/, "");
-    for (const [locale, own, other] of [
-      ["en", english, chinese],
-      ["zh", chinese, english],
-    ]) {
-      const prefix = locale === "zh" ? "zh/" : "";
-      const html = readFileSync(new URL(`${prefix}posts/obsidian/${slug}/index.html`, dist), "utf8")
-        .replaceAll("&amp;", "&")
-        .replaceAll("&#39;", "'")
-        .replaceAll("&apos;", "'")
-        .replaceAll("&quot;", '"');
-      const heading = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1].trim();
-      assert.equal(heading, own.frontmatter.title, `${locale}/${slug}`);
-      assert.ok(
-        !html.includes(other.frontmatter.title),
-        `Wrong-language post on ${locale}/${slug}`,
-      );
-      if (locale === "en") {
-        const article = html.match(/<article\b[^>]*>([\s\S]*?)<\/article>/)?.[1];
-        assert.ok(article, slug);
-        assert.doesNotMatch(article, /\p{Script=Han}/u, slug);
-      }
-      const switchTag = html.match(/<a\b[^>]*hreflang="(?:en|zh)"[^>]*>/)?.[0];
-      const counterpart = locale === "en" ? `${base}/zh/` : `${base}/`;
-      assert.ok(switchTag?.includes(`href="${counterpart}posts/obsidian/${slug}`), slug);
-
-      const postPages = readdirSync(new URL(`${prefix}posts/`, dist), { recursive: true }).filter(
-        (path) => /^(?:\d+\/)?index\.html$/.test(path),
-      );
-      const surfaces = [
-        `${prefix}index.html`,
-        `${prefix}archives/index.html`,
-        `${prefix}rss.xml`,
-        `${prefix}tags/${own.frontmatter.tags[0]}/index.html`,
-        ...postPages.map((page) => `${prefix}posts/${page}`),
-      ].map((path) =>
-        readFileSync(new URL(path, dist), "utf8")
-          .replaceAll("&amp;", "&")
-          .replaceAll("&#39;", "'")
-          .replaceAll("&apos;", "'")
-          .replaceAll("&quot;", '"'),
-      );
-      for (const surface of surfaces) {
-        assert.ok(
-          !surface.includes(other.frontmatter.title),
-          `Mixed languages on ${locale}/${slug}`,
-        );
-      }
-      for (const surface of surfaces.slice(1, 4)) {
-        assert.ok(surface.includes(own.frontmatter.title), `Missing ${locale}/${slug}`);
-      }
-      const listings = surfaces.slice(4).join("\n");
-      assert.equal(listings.split(own.frontmatter.title).length - 1, 1, `${locale}/${slug}`);
-      const feed = surfaces[2];
-      assert.equal(feed.split(`<title>${own.frontmatter.title}</title>`).length - 1, 1, slug);
+    if (frontmatter.draft) {
+      assert.ok(!existsSync(postPage), `Draft published: ${file}`);
+      assert.ok(!feed.includes(`/${postPath}/</link>`), `Draft in feed: ${file}`);
+      continue;
     }
+    if (new Date(frontmatter.pubDatetime).getTime() > Date.now()) continue;
+
+    const html = readFileSync(postPage, "utf8")
+      .replaceAll("&amp;", "&")
+      .replaceAll("&#39;", "'")
+      .replaceAll("&apos;", "'")
+      .replaceAll("&quot;", '\"')
+      .replaceAll("&lt;", "<")
+      .replaceAll("&gt;", ">");
+    const heading = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1].trim();
+    assert.equal(heading, frontmatter.title, file);
+    assert.ok(
+      feed.includes(`/${postPath}/</link>`) || feed.includes(`/${postPath}</link>`),
+      `Missing feed entry: ${file}`,
+    );
+
+    const counterpart = locale === "en" ? "zh/" : "";
+    const hasTranslation = existsSync(
+      new URL(`${counterpart}posts/obsidian/${slug}/index.html`, dist),
+    );
+    const switchTag = html.match(/<a\b[^>]*hreflang="(?:en|zh)"[^>]*>/)?.[0];
+    const destination = hasTranslation
+      ? `/${counterpart}posts/obsidian/${slug}`
+      : `/${counterpart}posts/`;
+    assert.ok(switchTag?.includes(`href="${destination}`), file);
   }
 
   const index = JSON.parse(readFileSync(new URL("pagefind/pagefind-entry.json", dist), "utf8"));
-  assert.equal(index.languages.en.page_count, index.languages.zh.page_count);
+  const pages = readdirSync(dist, { recursive: true }).filter((path) => path.endsWith(".html"));
+  for (const locale of ["en", "zh"]) {
+    const articles = pages.filter((path) => {
+      const pageLocale = path.startsWith("zh/") ? "zh" : "en";
+      return (
+        pageLocale === locale &&
+        readFileSync(new URL(path, dist), "utf8").includes("data-pagefind-body")
+      );
+    });
+    assert.equal(
+      index.languages[locale].page_count,
+      articles.length,
+      `Search index count for ${locale}`,
+    );
+  }
 });
 
 test("Custom-domain links and assets resolve from the site root", () => {

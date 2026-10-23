@@ -1,7 +1,7 @@
 ---
 author: Raven
 lang: zh
-pubDatetime: 2026-10-10T00:00:00+08:00
+pubDatetime: 2026-10-10T00:00:00.000+08:00
 title: Go 并发结果为什么每次不同：从共享计数到竞态检测
 draft: false
 featured: false

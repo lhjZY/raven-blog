@@ -1,7 +1,7 @@
 ---
 author: Raven
 lang: zh
-pubDatetime: 2026-10-10T00:00:00+08:00
+pubDatetime: 2026-10-10T00:00:00.000+08:00
 title: PostgreSQL 导入数据后，自增主键为什么冲突？
 draft: false
 featured: false

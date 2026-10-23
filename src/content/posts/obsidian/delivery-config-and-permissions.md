@@ -1,7 +1,7 @@
 ---
 author: Raven
 lang: zh
-pubDatetime: 2026-10-10T00:00:00+08:00
+pubDatetime: 2026-10-10T00:00:00.000+08:00
 title: 隐藏页面还不够：交付配置与账号权限如何共同生效
 draft: false
 featured: false

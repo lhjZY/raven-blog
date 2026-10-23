@@ -1,7 +1,7 @@
 ---
 author: Raven
 lang: zh
-pubDatetime: 2026-10-10T00:00:00+08:00
+pubDatetime: 2026-10-10T00:00:00.000+08:00
 title: 任务系统里的时间：绝对时刻、当地时间与“全天”
 draft: false
 featured: false

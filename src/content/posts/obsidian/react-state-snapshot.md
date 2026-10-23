@@ -1,7 +1,7 @@
 ---
 author: Raven
 lang: zh
-pubDatetime: 2026-10-10T00:00:00+08:00
+pubDatetime: 2026-10-10T00:00:00.000+08:00
 title: 连续调用三次 setState，为什么只加了一次？
 draft: false
 featured: false

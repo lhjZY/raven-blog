@@ -17,7 +17,8 @@ const posts = defineCollection({
       featured: z.boolean().optional(),
       draft: z.boolean().optional(),
       tags: z.array(z.string()).default(["others"]),
-      ogImage: image().or(z.string()).optional(),
+      // CMS uploads live in public/; keep their URLs out of Astro's asset imports.
+      ogImage: z.string().regex(/^(\/|https?:\/\/)/).or(image()).optional(),
       description: z.string(),
       canonicalURL: z.string().optional(),
       hideEditPost: z.boolean().optional(),

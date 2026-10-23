@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import ravenLogo from "@/assets/raven-logo.png";
 import IconUnderline from "@/assets/icons/IconUnderline.svg";
@@ -13,6 +14,9 @@ import LinkButton from "./LinkButton.astro";
 import { stripBase, stripLocale } from "@/utils/withBase";
 import { useTranslations } from "@/i18n";
 import config from "@/config";
+import { postFilter } from "@/utils/postFilter";
+import { getPostSlug } from "@/utils/getPostPaths";
+import { slugifyAll } from "@/utils/slugify";
 
 const { site, features } = config;
 
@@ -29,8 +33,34 @@ const pathWithoutTrailingSlash =
 
 const currentPath = stripLocale(pathWithoutTrailingSlash, locale);
 const otherLocale = locale === "zh" ? "en" : "zh";
+let languagePath = currentPath;
+
+// A post, tag or page can exist in only one language when authors publish independently.
+if (currentPath.startsWith("/posts") || currentPath.startsWith("/tags/")) {
+  const otherPosts = await getCollection("posts", post => postFilter(post, otherLocale));
+  const postPage = currentPath.match(/^\/posts(?:\/(\d+))?$/);
+  const tagPage = currentPath.match(/^\/tags\/([^/]+)(?:\/(\d+))?$/);
+
+  if (postPage) {
+    if (Number(postPage[1] ?? 1) > Math.ceil(otherPosts.length / config.posts.perPage)) {
+      languagePath = "/posts";
+    }
+  } else if (currentPath.startsWith("/posts/")) {
+    const hasTranslation = otherPosts.some(
+      post => `/posts${getPostSlug(post.id, post.filePath)}` === decodeURI(currentPath)
+    );
+    if (!hasTranslation) languagePath = "/posts";
+  } else if (tagPage) {
+    const tag = decodeURIComponent(tagPage[1]);
+    const matchingPosts = otherPosts.filter(post => slugifyAll(post.data.tags).includes(tag));
+    const lastPage = Math.ceil(matchingPosts.length / config.posts.perPage);
+    if (lastPage === 0) languagePath = "/tags";
+    else if (Number(tagPage[2] ?? 1) > lastPage) languagePath = `/tags/${tagPage[1]}`;
+  }
+}
+
 const languageHref =
-  getRelativeLocaleUrl(otherLocale, currentPath) + Astro.url.search;
+  getRelativeLocaleUrl(otherLocale, languagePath) + Astro.url.search;
 
 const isActive = (path: string) => {
   const currentPathArray = currentPath.split("/").filter(p => p.trim());

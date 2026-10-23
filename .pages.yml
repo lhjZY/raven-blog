@@ -1,0 +1,113 @@
+media:
+  - name: blog-images
+    label: 文章图片
+    input: public/images/blog
+    output: /images/blog
+    extensions: [jpg, jpeg, png, webp, gif, avif, svg]
+    rename: random
+
+content:
+  - name: posts
+    label: 博客文章
+    type: collection
+    path: src/content/posts
+    format: yaml-frontmatter
+    subfolders: true
+    # MDX 包含 Astro 组件，继续使用代码编辑器维护。
+    exclude: ["**/*.mdx", "**/assets/**"]
+    filename:
+      # Pages CMS 会移除中文标题中的汉字，用时间生成文件名以免同日文章重名。
+      template: "{year}-{month}-{day}-{hour}{minute}{second}.md"
+      field: create
+    view:
+      fields: [title, lang, draft, pubDatetime]
+      primary: title
+      sort: [pubDatetime, title]
+      search: [title, description]
+      default:
+        sort: pubDatetime
+        order: desc
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        required: true
+      - name: description
+        label: 摘要
+        type: text
+        required: true
+        description: 用一两句话介绍文章，用于列表、搜索和分享。
+      - name: draft
+        label: 保存为草稿
+        type: boolean
+        default: true
+        description: 开启时不会显示在博客；关闭并保存到 main 后，等待自动部署完成即可上线。
+      - name: pubDatetime
+        label: 发布时间
+        type: date
+        required: true
+        description: 按浏览器所在时区填写；发布时请检查日期，未来时间需要到时重新构建才会显示。
+        options:
+          time: true
+          format: "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+      - name: lang
+        label: 文章语言
+        type: select
+        default: zh
+        options:
+          values:
+            - name: zh
+              label: 中文
+            - name: en
+              label: English
+      - name: tags
+        label: 标签
+        type: string
+        list: true
+        default: [others]
+      - name: body
+        label: 正文
+        type: rich-text
+        options:
+          format: markdown
+          media: blog-images
+          switcher: true
+      - name: ogImage
+        label: 分享封面
+        type: image
+        description: 可选；留空时使用博客自动生成的分享图。
+        options:
+          media: blog-images
+      - name: featured
+        label: 首页精选
+        type: boolean
+        default: false
+      - name: author
+        label: 作者
+        type: string
+        default: Raven
+      - name: modDatetime
+        label: 最后更新时间
+        type: date
+        default: ""
+        description: 可选；文章有实质更新时再填写。
+        options:
+          time: true
+          format: "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+      - name: hideEditPost
+        label: 隐藏文章底部的编辑链接
+        type: boolean
+        default: true
+      - name: canonicalURL
+        label: 原文地址
+        type: string
+        description: 仅转载文章需要填写完整网址，原创文章留空。
+      - name: timezone
+        label: 日期显示时区
+        type: string
+        default: Asia/Shanghai
+
+settings:
+  content:
+    # 保留已有文章中未放入表单的字段，例如自定义 slug。
+    merge: true

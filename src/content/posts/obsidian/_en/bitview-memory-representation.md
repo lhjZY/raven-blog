@@ -1,7 +1,7 @@
 ---
 author: Raven
 lang: en
-pubDatetime: 2026-10-10T00:00:00+08:00
+pubDatetime: 2026-10-10T00:00:00.000+08:00
 title: Understanding Two's Complement, Endianness, and Floating Point with a Small C Program
 draft: false
 featured: false
