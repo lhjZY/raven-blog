@@ -15,7 +15,7 @@ const Wrapper = href ? "a" : "div";
       alt=""
       width={28}
       densities={[1, 2]}
-      class="project-icon mt-0.5 size-7 shrink-0"
+      class="mt-0.5 size-7 shrink-0"
     />
     <div class="min-w-0 flex-1">
       <div class="flex items-baseline gap-3">
@@ -33,15 +33,3 @@ const Wrapper = href ? "a" : "div";
     </div>
   </Wrapper>
 </li>
-
-<style>
-  /* Icons are black artwork on a white canvas; blend the canvas away like the hero illustration. */
-  .project-icon {
-    mix-blend-mode: multiply;
-  }
-
-  :global([data-theme="dark"]) .project-icon {
-    filter: invert(1);
-    mix-blend-mode: screen;
-  }
-</style>

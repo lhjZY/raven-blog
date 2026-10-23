@@ -23,19 +23,19 @@ export type LocalizedProject = Omit<Project, "copy"> & ProjectCopy;
 const projects: Project[] = [
   {
     id: "raven-translate-native",
-    name: "Raven-Translate Native",
+    name: "Raven-Translate",
     icon: ravenTranslateNativeIcon,
     href: "https://lhjzy.github.io/raven-translate-native-site/",
     copy: {
       zh: {
         kind: "macOS 应用",
-        status: "开发中",
-        tagline: "在桌面上完成翻译、英文检查与长难句分析。",
+        status: "预览版",
+        tagline: "在任意应用中选中文本，按快捷键翻译或检查英文。",
       },
       en: {
         kind: "macOS app",
-        status: "In progress",
-        tagline: "Translate, proofread and parse long sentences on the desktop.",
+        status: "Preview",
+        tagline: "Select text in any app and press a shortcut to translate it or check your English.",
       },
     },
   },
