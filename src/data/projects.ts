@@ -30,12 +30,12 @@ const projects: Project[] = [
       zh: {
         kind: "macOS 应用",
         status: "预览版",
-        tagline: "在任意应用中选中文本，按快捷键翻译或检查英文。",
+        tagline: "在任意应用中翻译、检查英文，并把句子收进词汇本复习。",
       },
       en: {
         kind: "macOS app",
         status: "Preview",
-        tagline: "Select text in any app and press a shortcut to translate it or check your English.",
+        tagline: "Translate and check English in any app, then save sentences to a notebook and review them.",
       },
     },
   },
