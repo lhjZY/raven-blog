@@ -8,7 +8,17 @@ const base = "";
 
 test("Pages retain their locale and language switches resolve without requiring translations", () => {
   const pages = readdirSync(dist, { recursive: true }).filter((path) => path.endsWith(".html"));
-  assert.ok(pages.length > 30, "Build both languages before running this check");
+  for (const prefix of ["", "zh/"]) {
+    for (const path of [
+      "index.html",
+      "posts/index.html",
+      "tags/index.html",
+      "about/index.html",
+      "search/index.html",
+    ]) {
+      assert.ok(pages.includes(`${prefix}${path}`), `Missing required page: ${prefix}${path}`);
+    }
+  }
 
   for (const page of pages) {
     const locale = page.startsWith("zh/") ? "zh" : "en";
@@ -43,30 +53,65 @@ test("Pages retain their locale and language switches resolve without requiring 
   }
 });
 
-test("Chinese pagination, dates, feeds and search indexes use the correct locale", () => {
-  const home = readFileSync(new URL("zh/index.html", dist), "utf8");
-  const feedUrl = home.match(/<link[^>]*type="application\/rss\+xml"[^>]*href="([^"]+)"/)?.[1];
-  assert.ok(feedUrl, "The RSS feed remains discoverable without a visible icon");
-  assert.equal(new URL(feedUrl).pathname, `${base}/zh/rss.xml`);
-  const posts = readFileSync(new URL("zh/posts/index.html", dist), "utf8");
-  assert.match(posts, new RegExp(`href="${base}/zh/posts/2/?"`));
-  const post = readFileSync(
-    new URL("zh/posts/dynamic-og-image-generation-in-astropaper-blog-posts/index.html", dist),
-    "utf8",
-  );
-  assert.match(post, /2026年6月3日/);
-  const tags = readFileSync(new URL("zh/tags/docs/index.html", dist), "utf8");
-  assert.match(tags, new RegExp(`href="${base}/zh/tags/docs/2/?"`));
-  const rss = readFileSync(new URL("zh/rss.xml", dist), "utf8");
-  assert.match(rss, /<link>[^<]+\/zh\/posts\//);
-  assert.doesNotMatch(rss, /<link>https:\/\/liuhuanjun\.top\/posts\//);
-  const index = JSON.parse(readFileSync(new URL("pagefind/pagefind-entry.json", dist), "utf8"));
-  assert.deepEqual(Object.keys(index.languages).sort(), ["en", "zh"]);
+test("Pagination, dates and feeds match the published content in each locale", () => {
+  const pages = readdirSync(dist, { recursive: true }).filter((path) => path.endsWith(".html"));
+
+  for (const locale of ["en", "zh"]) {
+    const prefix = locale === "zh" ? "zh/" : "";
+    const home = readFileSync(new URL(`${prefix}index.html`, dist), "utf8");
+    const feedUrl = home.match(/<link[^>]*type="application\/rss\+xml"[^>]*href="([^"]+)"/)?.[1];
+    assert.ok(feedUrl, `Missing RSS discovery link for ${locale}`);
+    assert.equal(new URL(feedUrl).pathname, `${base}/${prefix}rss.xml`);
+
+    const articles = [];
+    for (const page of pages) {
+      if ((page.startsWith("zh/") ? "zh" : "en") !== locale) continue;
+      const html = readFileSync(new URL(page, dist), "utf8");
+      if (html.includes("data-pagefind-body")) {
+        articles.push(`/${page.replace(/\/index\.html$/, "")}`);
+        const date = html.match(/<time\b[^>]*datetime="([^"]+)"[^>]*>\s*([^<]+)<\/time>/);
+        assert.ok(date, `Missing article date: ${page}`);
+        assert.ok(Number.isFinite(Date.parse(date[1])), `Invalid article date: ${page}`);
+        assert.match(
+          date[2].trim(),
+          locale === "zh" ? /^\d{4}年\d{1,2}月\d{1,2}日$/ : /^\d{1,2} [A-Z][a-z]{2}, \d{4}$/,
+          page,
+        );
+      }
+
+      const listing = page.slice(prefix.length).match(
+        /^(posts|tags\/[^/]+)(?:\/(\d+))?\/index\.html$/,
+      );
+      if (!listing) continue;
+      const [, section, number] = listing;
+      const currentPage = Number(number ?? 1);
+      const nextPage = `${prefix}${section}/${currentPage + 1}/index.html`;
+      const nextHref = `${base}/${prefix}${section}/${currentPage + 1}`;
+      const links = Array.from(html.matchAll(/href="([^"]+)"/g), ([, href]) =>
+        decodeURI(href).replace(/\/$/, ""),
+      );
+      assert.equal(links.includes(nextHref), pages.includes(nextPage), `Next page link: ${page}`);
+      if (currentPage > 1) {
+        const previousHref = `${base}/${prefix}${section}${currentPage === 2 ? "" : `/${currentPage - 1}`}`;
+        assert.ok(links.includes(previousHref), `Missing previous page link: ${page}`);
+      }
+    }
+
+    const rss = readFileSync(new URL(`${prefix}rss.xml`, dist), "utf8");
+    const entries = Array.from(
+      rss.matchAll(/<item>[\s\S]*?<link>([^<]+)<\/link>[\s\S]*?<\/item>/g),
+      ([, link]) => decodeURI(new URL(link).pathname).replace(/\/$/, ""),
+    );
+    assert.deepEqual(entries.sort(), articles.sort(), `RSS entries for ${locale}`);
+  }
 });
 
 test("Personal articles publish independently and stay in their locale", () => {
   const source = new URL("../src/content/posts/obsidian/", import.meta.url);
-  const files = readdirSync(source, { recursive: true }).filter((file) => file.endsWith(".md"));
+  // This legacy folder is optional; new CMS articles can live elsewhere.
+  const files = existsSync(source)
+    ? readdirSync(source, { recursive: true }).filter((file) => file.endsWith(".md"))
+    : [];
 
   for (const file of files) {
     const { frontmatter } = parseFrontmatter(readFileSync(new URL(file, source), "utf8"));
@@ -109,23 +154,27 @@ test("Personal articles publish independently and stay in their locale", () => {
       : `/${counterpart}posts/`;
     assert.ok(switchTag?.includes(`href="${destination}`), file);
   }
+});
 
+test("Search indexes match article pages and support an empty blog", () => {
   const index = JSON.parse(readFileSync(new URL("pagefind/pagefind-entry.json", dist), "utf8"));
-  const pages = readdirSync(dist, { recursive: true }).filter((path) => path.endsWith(".html"));
-  for (const locale of ["en", "zh"]) {
-    const articles = pages.filter((path) => {
-      const pageLocale = path.startsWith("zh/") ? "zh" : "en";
-      return (
-        pageLocale === locale &&
-        readFileSync(new URL(path, dist), "utf8").includes("data-pagefind-body")
-      );
-    });
-    assert.equal(
-      index.languages[locale].page_count,
-      articles.length,
-      `Search index count for ${locale}`,
-    );
+  const pages = readdirSync(dist, { recursive: true })
+    .filter((path) => path.endsWith(".html"))
+    .map((path) => ({
+      locale: path.startsWith("zh/") ? "zh" : "en",
+      html: readFileSync(new URL(path, dist), "utf8"),
+    }));
+  const articles = pages.filter(({ html }) => html.includes("data-pagefind-body"));
+  // Pagefind falls back to <body> only when no page defines data-pagefind-body.
+  const indexedPages = articles.length > 0 ? articles : pages;
+  const expectedCounts = {};
+  for (const { locale } of indexedPages) {
+    expectedCounts[locale] = (expectedCounts[locale] ?? 0) + 1;
   }
+  const actualCounts = Object.fromEntries(
+    Object.entries(index.languages).map(([locale, data]) => [locale, data.page_count]),
+  );
+  assert.deepEqual(actualCounts, expectedCounts);
 });
 
 test("Custom-domain links and assets resolve from the site root", () => {
