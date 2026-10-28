@@ -1,0 +1,143 @@
+/* Neutrals match claude.dev: background #141413, text #faf9f5, then #b0aea5, #87867f and #5e5d59
+   for quieter text, and lines in the text colour at 16%. The --sand names are kept so components
+   need no changes. Amber, the raven's colour, stays Radix. claude.dev has no light theme; light
+   mode here is the same palette reversed. */
+:root {
+  --sand1: #141413; --sand2: #1b1b1a; --sand3: #232321; --sand4: #2b2b28; --sand5: #33332f;
+  --sand6: #faf9f529; --sand7: #5e5d59; --sand8: #5e5d59; --sand9: #87867f; --sand11: #b0aea5;
+  --sand12: #faf9f5;
+  --amber3: #302008; --amber4: #3f2700; --amber9: #ffc53d; --amber11: #ffca16; --amber12: #ffe7b3;
+  --on-amber: #4f3422;
+  --violet9: #6e56cf; --blue9: #0090ff; --grass9: #46a758; --tomato9: #e54d2e;
+
+  /* claude.dev's own typefaces are Anthropic's; these are the system fonts it falls back to. */
+  --sans: -apple-system, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  /* Four sizes, as on claude.dev: labels, dates, text, titles. */
+  --text-label: 13.5px;
+  --text-meta: 15.75px;
+  --text-ui: 18px;
+  --text-read: 18px;
+  --text-title: 31.5px;
+  --line: 0.5px solid var(--sand6);
+  --gutter: 24px;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --sand1: #faf9f5; --sand2: #f3f2ee; --sand3: #ecebe6; --sand4: #e4e3dd; --sand5: #dcdbd4;
+    --sand6: #1414132e; --sand7: #b0aea5; --sand8: #b0aea5; --sand9: #87867f; --sand11: #5e5d59;
+    --sand12: #141413;
+    --amber3: #fff7c2; --amber4: #ffee9c; --amber11: #ab6400; --amber12: #4f3422;
+    color-scheme: light;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--sand1);
+  color: var(--sand12);
+  font: var(--text-ui) / 1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+img, svg { display: block; }
+::selection { background: var(--amber9); color: var(--on-amber); }
+
+.mono { font-family: var(--mono); }
+.label {
+  font: var(--text-label) / 1.5 var(--mono);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--sand9);
+}
+
+.page { max-width: 1200px; margin: 0 auto; padding: 0 var(--gutter); }
+
+/* Two columns: a sticky aside on the left, content on the right. */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+  gap: 64px;
+  padding-top: 48px;
+  padding-bottom: 96px;
+}
+.split > aside { position: sticky; top: 32px; align-self: start; }
+@media (max-width: 860px) {
+  .split { grid-template-columns: minmax(0, 1fr); gap: 32px; padding-top: 24px; }
+  .split > aside { position: static; }
+}
+
+/* For labels that contain product names such as macOS. */
+.keep-case { text-transform: none; }
+
+.site-title { font: 400 var(--text-title) / 1.1 var(--mono); margin: 0 0 16px; }
+.lede { color: var(--sand11); margin: 0; }
+
+/* Illustrations respect reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding-top: 24px;
+  padding-bottom: 48px;
+  border-top: var(--line);
+}
+.footer-links { margin-left: auto; display: flex; gap: 20px; }
+.footer-links a { transition: color 250ms ease-out; }
+.footer-links a:hover { color: var(--sand12); }
+@media (max-width: 860px) {
+  .footer { flex-wrap: wrap; gap: 12px 24px; }
+}
+
+/* Article text */
+.prose { font-size: var(--text-read); line-height: 1.85; }
+.prose > * { margin: 0 0 24px; }
+.prose h2 {
+  font: 600 var(--text-meta) / 1.4 var(--mono);
+  letter-spacing: 0.02em;
+  margin: 56px 0 16px;
+  scroll-margin-top: 32px;
+}
+.prose h3 { font-size: var(--text-read); margin: 32px 0 12px; }
+.prose a { text-decoration: underline; text-decoration-color: var(--sand8); text-underline-offset: 3px; }
+.prose a:hover { text-decoration-color: var(--amber9); }
+.prose strong { font-weight: 600; }
+.prose ul, .prose ol { padding-left: 1.4em; }
+.prose li { margin: 6px 0; }
+.prose code {
+  font: 0.85em var(--mono);
+  background: var(--sand3);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+.prose pre {
+  background: var(--sand2);
+  border: var(--line);
+  border-radius: 8px;
+  padding: 16px 20px;
+  overflow-x: auto;
+  font-size: var(--text-meta);
+  line-height: 1.6;
+}
+.prose pre code { background: none; padding: 0; font-size: inherit; }
+.prose blockquote {
+  margin-left: 0;
+  margin-right: 0;
+  padding: 16px 20px;
+  background: var(--sand2);
+  border-radius: 8px;
+  color: var(--sand11);
+}
+.prose blockquote p { margin: 0; }
+.prose table { width: 100%; border-collapse: collapse; font-size: var(--text-meta); }
+.prose th, .prose td { text-align: left; padding: 8px 12px 8px 0; border-bottom: var(--line); }
+.prose th { font: var(--text-label) / 1.4 var(--mono); color: var(--sand9); }
+.prose hr { border: 0; border-top: var(--line); }

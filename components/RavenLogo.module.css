@@ -1,0 +1,28 @@
+.raven {
+  overflow: visible;
+}
+
+.eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: blink 5s ease-out infinite;
+}
+
+.body {
+  transform-box: fill-box;
+  transform-origin: bottom center;
+}
+
+a:hover > .raven .body {
+  animation: hop 500ms ease-out;
+}
+
+@keyframes blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+
+@keyframes hop {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-6px) scaleY(1.03); }
+}

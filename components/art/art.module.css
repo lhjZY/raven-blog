@@ -1,0 +1,54 @@
+/* Shared by the three post illustrations: dark line art on the amber square. */
+.art {
+  width: 100%;
+  height: 100%;
+  color: var(--on-amber);
+  overflow: visible;
+}
+
+/* Board: a card hops from 明天 into 今天, then gets ticked off. */
+.mover { animation: hop 6s ease-out infinite; }
+.tick { stroke-dasharray: 1; stroke-dashoffset: 1; animation: tick 6s ease-out infinite; }
+@keyframes hop {
+  0%, 25% { transform: translate(0, 0); }
+  35% { transform: translate(-16px, -12px); }
+  45%, 100% { transform: translate(-33px, 16px); }
+}
+@keyframes tick {
+  0%, 55% { stroke-dashoffset: 1; }
+  65%, 92% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 1; }
+}
+
+/* Raven: draws itself line by line, then opens its eyes and blinks. */
+.line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw1 7s ease-out infinite; }
+.line2 { animation-name: draw2; }
+.line3 { animation-name: draw3; }
+.line4 { animation-name: draw4; }
+.face { opacity: 0; animation: face 7s ease-out infinite; }
+.eyes { transform-box: fill-box; transform-origin: center; animation: blink 7s ease-out infinite; }
+@keyframes draw1 { 0% { stroke-dashoffset: 1; } 18%, 90% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 1; } }
+@keyframes draw2 { 0%, 12% { stroke-dashoffset: 1; } 26%, 90% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 1; } }
+@keyframes draw3 { 0%, 20% { stroke-dashoffset: 1; } 34%, 90% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 1; } }
+@keyframes draw4 { 0%, 28% { stroke-dashoffset: 1; } 42%, 90% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 1; } }
+@keyframes face { 0%, 40% { opacity: 0; } 48%, 90% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes blink { 0%, 66% { transform: scaleY(1); } 69% { transform: scaleY(0.1); } 72%, 100% { transform: scaleY(1); } }
+
+/* Calendar: the days fill in, a 休 and a 班 badge pop up, and the selection steps on a day. */
+.day { opacity: 0; animation: fill 7s ease-out infinite; }
+.badge { transform-box: fill-box; transform-origin: center; transform: scale(0); animation: pop 7s ease-out infinite; }
+.late { animation-delay: 0.3s; }
+.pick { animation: pick 7s ease-out infinite; }
+@keyframes fill { 0% { opacity: 0; } 8%, 92% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes pop {
+  0%, 30% { transform: scale(0); }
+  36% { transform: scale(1.15); }
+  40%, 92% { transform: scale(1); }
+  100% { transform: scale(0); }
+}
+@keyframes pick {
+  0%, 45% { transform: translate(0, 0); opacity: 0; }
+  50%, 60% { transform: translate(0, 0); opacity: 1; }
+  66%, 92% { transform: translate(23.4px, 14px); opacity: 1; }
+  100% { transform: translate(23.4px, 14px); opacity: 0; }
+}

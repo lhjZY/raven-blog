@@ -1,0 +1,36 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  height: 88px;
+}
+
+.logo {
+  display: block;
+}
+
+.nav {
+  display: flex;
+  gap: 40px;
+}
+
+.item {
+  font: var(--text-label) / 1 var(--mono);
+  letter-spacing: 0.02em;
+  color: var(--sand9);
+  transition: color 250ms ease-out;
+}
+
+.key {
+  color: var(--sand8);
+}
+
+.item:hover,
+.active {
+  color: var(--sand12);
+}
+
+@media (max-width: 860px) {
+  .header { gap: 24px; height: 72px; }
+  .nav { gap: 20px; }
+}

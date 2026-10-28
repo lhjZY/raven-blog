@@ -1,0 +1,52 @@
+.mascot {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 40px 0;
+  padding: 24px;
+  background: var(--sand2);
+  border-radius: 12px;
+}
+
+.heading {
+  font: 600 var(--text-ui) / 1.4 var(--sans);
+  margin: 0 0 6px;
+}
+
+.text {
+  margin: 0;
+  color: var(--sand11);
+}
+
+.section {
+  margin: 48px 0 12px;
+  font-weight: 400;
+}
+
+.contacts {
+  margin: 0;
+}
+
+.contact {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: baseline;
+  padding: 12px 0;
+  border-top: var(--line);
+}
+
+.contact:last-child {
+  border-bottom: var(--line);
+}
+
+.contact dd {
+  margin: 0;
+}
+
+.contact a {
+  transition: color 250ms ease-out;
+}
+
+.contact a:hover {
+  color: var(--amber11);
+}

@@ -1,0 +1,46 @@
+.aside p {
+  margin: 0 0 12px;
+}
+
+.toc {
+  list-style: none;
+  margin: 0 0 32px;
+  padding: 0;
+  font: var(--text-label) / 1.4 var(--mono);
+}
+
+.toc li {
+  margin: 0 0 8px;
+}
+
+.toc a {
+  color: var(--sand9);
+  transition: color 250ms ease-out;
+}
+
+.toc a:hover,
+.current {
+  color: var(--sand12) !important;
+}
+
+.branch {
+  color: var(--sand7);
+}
+
+.progress {
+  display: flex;
+  gap: 12px;
+  letter-spacing: 0;
+}
+
+.bar {
+  color: var(--sand8);
+}
+
+.filled {
+  color: var(--amber9);
+}
+
+@media (max-width: 860px) {
+  .aside { display: none; }
+}
