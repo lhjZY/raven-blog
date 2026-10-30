@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ArticleAside from "@/components/ArticleAside";
 import PostArt from "@/components/art/PostArt";
+import RollingStamp from "@/components/stamp/RollingStamp";
 import { formatDate, getPost, getPosts } from "@/lib/posts";
 import styles from "./post.module.css";
 
@@ -31,6 +32,7 @@ export default async function PostPage({ params }: Params) {
             <span>{post.minutes} 分钟阅读</span>
           </p>
         </header>
+        <RollingStamp />
         <div className="prose" dangerouslySetInnerHTML={{ __html: post.html }} />
         <Link href="/" className={`label ${styles.back}`}>
           ← 所有文章

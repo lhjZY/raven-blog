@@ -1,0 +1,31 @@
+/* The paper sits behind everything in the document; the ball and its shadow float above the page. */
+.floor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.floor canvas {
+  display: block;
+}
+
+.ball {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.shadow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgb(0 0 0 / 0.22), rgb(0 0 0 / 0.08) 55%, transparent);
+}
