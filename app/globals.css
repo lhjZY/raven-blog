@@ -141,3 +141,4 @@ img, svg { display: block; }
 .prose th, .prose td { text-align: left; padding: 8px 12px 8px 0; border-bottom: var(--line); }
 .prose th { font: var(--text-label) / 1.4 var(--mono); color: var(--sand9); }
 .prose hr { border: 0; border-top: var(--line); }
+.prose img { max-width: 100%; height: auto; }

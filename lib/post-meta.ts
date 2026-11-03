@@ -12,6 +12,8 @@ export interface PostMeta {
   date: string;
   tag: Tag;
   art: ArtName;
+  /** Written in the admin; drafts stay out of the build. */
+  draft: boolean;
   minutes: number;
 }
 

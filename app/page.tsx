@@ -1,14 +1,9 @@
-import PostList from "@/components/PostList";
-import { getPosts } from "@/lib/posts";
+import type { Metadata } from "next";
+import BlogHome from "@/components/pages/BlogHome";
+import { alternates } from "@/lib/i18n";
 
-export default function BlogPage() {
-  return (
-    <div className="page split">
-      <aside>
-        <h1 className="site-title">Raven</h1>
-        <p className="lede">做 Raven Translate 和 Raven Todo 时的设计与开发笔记。</p>
-      </aside>
-      <PostList posts={getPosts()} />
-    </div>
-  );
+export const metadata: Metadata = { alternates: alternates("/") };
+
+export default function Page() {
+  return <BlogHome locale="zh" />;
 }

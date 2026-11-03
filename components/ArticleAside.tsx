@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { dict, type Locale } from "@/lib/i18n";
 import styles from "./ArticleAside.module.css";
 
 const cells = 20;
@@ -9,10 +10,13 @@ const cells = 20;
 export default function ArticleAside({
   headings,
   minutes,
+  locale,
 }: {
   headings: { id: string; text: string }[];
   minutes: number;
+  locale: Locale;
 }) {
+  const t = dict[locale];
   const [current, setCurrent] = useState(headings[0]?.id);
   const [progress, setProgress] = useState(0);
 
@@ -43,7 +47,7 @@ export default function ArticleAside({
   const filled = Math.round(progress * cells);
   return (
     <aside className={styles.aside}>
-      <p className="label">目录</p>
+      <p className="label">{t.contents}</p>
       <ol className={styles.toc}>
         {headings.map(({ id, text }) => (
           <li key={id}>
@@ -53,14 +57,14 @@ export default function ArticleAside({
           </li>
         ))}
       </ol>
-      <p className={`label ${styles.progress}`} aria-label={`已读 ${Math.round(progress * 100)}%`}>
+      <p className={`label ${styles.progress}`} aria-label={t.progress(Math.round(progress * 100))}>
         <span className={styles.bar}>
           <span className={styles.filled}>{"▓".repeat(filled)}</span>
           {"░".repeat(cells - filled)}
         </span>
         <span>{String(Math.round(progress * 100)).padStart(2, "0")}%</span>
       </p>
-      <p className="label">{minutes} 分钟阅读</p>
+      <p className="label">{t.readTime(minutes)}</p>
     </aside>
   );
 }

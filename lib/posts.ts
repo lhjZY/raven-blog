@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { Marked } from "marked";
 import type { ArtName } from "@/components/art/PostArt";
+import type { Locale } from "./i18n";
 import type { PostMeta, Tag } from "./post-meta";
 
 export { formatDate, type PostMeta, type Tag } from "./post-meta";
@@ -12,24 +13,31 @@ export interface Post extends PostMeta {
   headings: { id: string; text: string }[];
 }
 
-const directory = path.join(process.cwd(), "content/posts");
+// Chinese posts sit in content/posts, their English versions under content/posts/en with the same slug.
+const root = path.join(process.cwd(), "content/posts");
+const directory = (locale: Locale) => (locale === "en" ? path.join(root, "en") : root);
 
-/** Posts, newest first. */
-export function getPosts(): PostMeta[] {
+// Drafts show in `pnpm dev` for proofreading and are left out of the build.
+const showDrafts = process.env.NODE_ENV !== "production";
+
+/** Posts in one language, newest first. */
+export function getPosts(locale: Locale): PostMeta[] {
+  if (!fs.existsSync(directory(locale))) return [];
   return fs
-    .readdirSync(directory)
+    .readdirSync(directory(locale))
     .filter((file) => file.endsWith(".md"))
-    .map((file) => readPost(file.replace(/\.md$/, "")))
+    .map((file) => readPost(locale, file.replace(/\.md$/, "")))
+    .filter((post) => showDrafts || !post.draft)
     .map(({ html: _html, headings: _headings, ...meta }) => meta)
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 
-export function getPost(slug: string): Post {
-  return readPost(slug);
+export function getPost(locale: Locale, slug: string): Post {
+  return readPost(locale, slug);
 }
 
-function readPost(slug: string): Post {
-  const source = fs.readFileSync(path.join(directory, `${slug}.md`), "utf8");
+function readPost(locale: Locale, slug: string): Post {
+  const source = fs.readFileSync(path.join(directory(locale), `${slug}.md`), "utf8");
   const match = source.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
   if (!match) throw new Error(`${slug}.md has no front matter`);
   const fields = Object.fromEntries(
@@ -47,11 +55,18 @@ function readPost(slug: string): Post {
     date: fields.date,
     tag: fields.tag as Tag,
     art: fields.art as ArtName,
-    // About 400 characters a minute for Chinese, counting code as text.
-    minutes: Math.max(1, Math.round(body.replace(/\s+/g, "").length / 400)),
+    draft: fields.draft === "true",
+    minutes: readingMinutes(locale, body),
     html,
     headings,
   };
+}
+
+// About 400 characters a minute for Chinese and 200 words for English, counting code as text.
+function readingMinutes(locale: Locale, body: string) {
+  const amount =
+    locale === "en" ? body.split(/\s+/).filter(Boolean).length / 200 : body.replace(/\s+/g, "").length / 400;
+  return Math.max(1, Math.round(amount));
 }
 
 function render(markdown: string) {

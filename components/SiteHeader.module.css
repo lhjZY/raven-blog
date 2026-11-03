@@ -21,6 +21,10 @@
   transition: color 250ms ease-out;
 }
 
+.lang {
+  margin-left: auto;
+}
+
 .key {
   color: var(--sand8);
 }
