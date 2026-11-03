@@ -41,6 +41,11 @@
   border-top: var(--line);
 }
 
+/* English labels run up to nine monospace letters ("TRANSLATE"). */
+:lang(en) .feature {
+  grid-template-columns: 92px minmax(0, 1fr);
+}
+
 .feature dd {
   margin: 0;
 }
