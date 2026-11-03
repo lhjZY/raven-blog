@@ -21,7 +21,7 @@ const releases = "https://github.com/lhjZY/raven-translate-native-site/releases"
 const copy: Record<Locale, { title: string; lede: string; read: string; works: Work[] }> = {
   zh: {
     title: "作品",
-    lede: "给自己每天用的 macOS 小工具，也放出来给你用。",
+    lede: "给自己每天用的小工具，也放出来给你用。",
     read: "读：",
     works: [
       {
@@ -43,6 +43,21 @@ const copy: Record<Locale, { title: string; lede: string; read: string; works: W
         post: "drawing-the-raven",
       },
       {
+        name: "Raven-Translate 插件",
+        icon: "/works/raven-translate-extension.png",
+        tagline: "在网页里读懂每一段英文",
+        summary:
+          "划词即译，整页译文与原文随时切换，长难句拆出主干，视频配上双语字幕。读到的词语连同例句和来源网页存进单词本。",
+        features: [
+          ["翻译", "划词翻译、整页翻译和视频字幕"],
+          ["分析", "拆解长难句，检查英文语法"],
+          ["引擎", "免费的 Google 翻译，也可接入 OpenAI 兼容服务"],
+        ],
+        platform: "Chrome、Edge、Firefox，即将上架",
+        links: [],
+        post: "",
+      },
+      {
         name: "Raven Todo",
         icon: "/works/raven-todo.png",
         tagline: "按时间排好的三列看板",
@@ -61,7 +76,7 @@ const copy: Record<Locale, { title: string; lede: string; read: string; works: W
   },
   en: {
     title: "Works",
-    lede: "Small macOS tools I make for my own days, shared for yours.",
+    lede: "Small tools I make for my own days, shared for yours.",
     read: "Read: ",
     works: [
       {
@@ -81,6 +96,21 @@ const copy: Record<Locale, { title: string; lede: string; read: string; works: W
           { label: "Download", href: releases },
         ],
         post: "drawing-the-raven",
+      },
+      {
+        name: "Raven-Translate Extension",
+        icon: "/works/raven-translate-extension.png",
+        tagline: "Understand every paragraph, right on the page",
+        summary:
+          "Translate a selection or the whole page and switch back to the original any time, break long sentences down to their core, and add bilingual subtitles to videos. Words you meet go into a wordbook with their example and source page.",
+        features: [
+          ["Translate", "Selection, full page and video subtitles"],
+          ["Analyze", "Break down long sentences, check English grammar"],
+          ["Engines", "Free Google Translate, or any OpenAI-compatible service"],
+        ],
+        platform: "Chrome, Edge and Firefox, coming soon",
+        links: [],
+        post: "",
       },
       {
         name: "Raven Todo",
