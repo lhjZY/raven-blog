@@ -1,4 +1,4 @@
-/* Shared by the three post illustrations: dark line art on the amber square. */
+/* Shared by the post illustrations: dark line art on the amber square. */
 .art {
   width: 100%;
   height: 100%;
@@ -20,7 +20,7 @@
   100% { stroke-dashoffset: 1; }
 }
 
-/* Raven: draws itself line by line, then opens its eyes and blinks. */
+/* Raven and Translate: draw themselves line by line, then opens its eyes and blinks. */
 .line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw1 7s ease-out infinite; }
 .line2 { animation-name: draw2; }
 .line3 { animation-name: draw3; }

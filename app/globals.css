@@ -42,7 +42,13 @@ body {
   color: var(--sand12);
   font: var(--text-ui) / 1.6 var(--sans);
   -webkit-font-smoothing: antialiased;
+  /* Short pages keep the footer at the bottom of the window. */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
+body > main { flex: 1 0 auto; }
 a { color: inherit; text-decoration: none; }
 img, svg { display: block; }
 ::selection { background: var(--amber9); color: var(--on-amber); }
@@ -83,6 +89,7 @@ img, svg { display: block; }
 }
 
 .footer {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 24px;

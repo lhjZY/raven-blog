@@ -3,8 +3,7 @@ title: A little raven landed on your menu bar
 description: From translating on the fly, to trying to say it myself, to practising again and again, I made a little raven that sits on the menu bar and keeps me company while I learn English.
 date: 2026-10-26
 tag: 设计
-art: raven
-draft: true
+art: translate
 ---
 
 Ever since I started using Immersive Translate, reading English web pages has become much smoother. A translation is always one glance away, and language no longer seems to be in the way.

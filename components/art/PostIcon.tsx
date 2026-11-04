@@ -31,6 +31,17 @@ export default function PostIcon({ art }: { art: ArtName }) {
           <path d="M11 14h2l-1 1.4z" />
         </>
       )}
+      {art === "translate" && (
+        <>
+          <path d="M12 6c4.6 0 7.5 3 7.5 7s-3 6.5-7.5 6.5S4.5 17 4.5 13 7.4 6 12 6z" />
+          <path d="M11 6c-.8-1.3-.3-2.4 1.2-2.8" />
+          <path d="M5 12.2c-1.6 1.2-1.8 3.4-.8 4.8M19 12.2c1.6 1.2 1.8 3.4.8 4.8" />
+          <circle cx="9.5" cy="12.5" r="0.8" fill="currentColor" />
+          <circle cx="14.5" cy="12.5" r="0.8" fill="currentColor" />
+          <path d="M11 14.5h2l-1 1.4z" />
+          <path d="M10 19.5v1.5M14 19.5v1.5" />
+        </>
+      )}
       {art === "calendar" && (
         <>
           <rect x="3.5" y="5" width="17" height="15" rx="2.5" />

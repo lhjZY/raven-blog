@@ -24,13 +24,13 @@ pnpm write    # 写作后台 http://127.0.0.1:4341
 
 ## 结构
 
-- `content/posts/*.md`：文章。头部写 `title`、`description`、`date`（yyyy-mm-dd）、`tag`（设计或工程）、`art`（board、raven 或 calendar，对应文章的动画插图），草稿另加 `draft: true`。文件名就是网址里的 slug。
+- `content/posts/*.md`：文章。头部写 `title`、`description`、`date`（yyyy-mm-dd）、`tag`（设计或工程）、`art`（board、raven、translate 或 calendar，对应文章的动画插图），草稿另加 `draft: true`。文件名就是网址里的 slug。
 - `content/posts/en/*.md`：英文文章，与中文版同名即互为译文。可以只写一种语言。
 - `lib/i18n.ts`：中英文界面文案和路径工具。中文在根路径，英文在 `/en/`；页头的语言切换（快捷键 L）进入当前页面的另一语言版本，文章没有译文时进入另一语言的博客首页。
 - `components/pages/`：各页面的内容组件，`app/` 与 `app/en/` 下的路由共用。
 - `scripts/admin/`：本地写作后台，`pnpm write` 启动。
 - `lib/posts.ts`：读取文章、渲染 Markdown、收集二级标题做目录、估算阅读时间。
-- `components/art/`：三幅动画插图（琥珀色方块上的线稿）和列表里的小图标。新文章想要新插图，在 `PostArt.tsx` 里加一个。
+- `components/art/`：四幅动画插图（琥珀色方块上的线稿）和列表里的小图标。新文章想要新插图，在 `PostArt.tsx` 里加一个。
 - `components/RavenLogo.tsx`：页头的小乌鸦，会眨眼，悬停时跳一下。
 - 页面：`app/page.tsx` 博客，`app/works/` 作品，`app/about/` 关于，`app/posts/[slug]/` 文章。
 

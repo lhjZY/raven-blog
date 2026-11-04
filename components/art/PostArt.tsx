@@ -1,6 +1,6 @@
 import styles from "./art.module.css";
 
-export type ArtName = "board" | "raven" | "calendar";
+export type ArtName = "board" | "raven" | "translate" | "calendar";
 
 /** A post's animated illustration on an amber square. */
 export default function PostArt({ art, size }: { art: ArtName; size: number }) {
@@ -16,6 +16,7 @@ export default function PostArt({ art, size }: { art: ArtName; size: number }) {
     >
       {art === "board" && <BoardArt />}
       {art === "raven" && <RavenArt />}
+      {art === "translate" && <TranslateArt />}
       {art === "calendar" && <CalendarArt />}
     </div>
   );
@@ -89,6 +90,35 @@ function RavenArt() {
           <circle cx="74" cy="63" r="6.5" />
         </g>
         <path d="M53.5 71Q60 68.5 66.5 71Q63.5 76.5 60 79.5Q56.5 76.5 53.5 71Z" />
+      </g>
+    </svg>
+  );
+}
+
+/** Raven Translate's front-facing chick draws itself line by line, opens its eyes and blinks. */
+function TranslateArt() {
+  const parts: [string, string][] = [
+    [styles.line, "M60 28C88 28 102 48 102 70C102 92 84 104 60 104C36 104 18 92 18 70C18 48 32 28 60 28Z"],
+    [styles.line2, "M55 29C51 24 52 18 59 15M63 28C63 22 68 18 75 18"],
+    [styles.line3, "M26 60C16 66 15 80 21 90L25 86L29 93L33 86L36 90C38 80 35 68 26 60Z"],
+    [styles.line3, "M94 60C104 66 105 80 99 90L95 86L91 93L87 86L84 90C82 80 85 68 94 60Z"],
+    [styles.line4, "M47 104V109M42 112.5L47 109L52 112.5M73 104V109M68 112.5L73 109L78 112.5"],
+  ];
+  return (
+    <svg viewBox="14 8 92 112" className={styles.art} aria-hidden="true">
+      <g {...line} strokeWidth={4}>
+        {parts.map(([className, d]) => (
+          <path key={d} className={`${styles.line} ${className}`} d={d} pathLength={1} />
+        ))}
+      </g>
+      <g className={styles.face} fill="currentColor">
+        <g className={styles.eyes}>
+          <circle cx="46" cy="64" r="6.5" />
+          <circle cx="74" cy="64" r="6.5" />
+          <circle cx="48" cy="61.5" r="2" fill="var(--amber9)" />
+          <circle cx="76" cy="61.5" r="2" fill="var(--amber9)" />
+        </g>
+        <path d="M54.5 72Q60 70 65.5 72Q63.5 77 60 80Q56.5 77 54.5 72Z" />
       </g>
     </svg>
   );
