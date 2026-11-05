@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import SiteHeader from "@/components/SiteHeader";
 import { dict, locales } from "@/lib/i18n";
-import { getPosts } from "@/lib/posts";
+import { getDrafts, getPosts } from "@/lib/posts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,10 +14,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // Which posts exist in each language, so the switcher can land on the translation.
   const slugs = Object.fromEntries(locales.map((locale) => [locale, getPosts(locale).map((post) => post.slug)]));
+  const draftSlugs = Object.fromEntries(locales.map((locale) => [locale, getDrafts(locale).map((post) => post.slug)]));
   return (
     <html lang="zh-CN">
       <body>
-        <SiteHeader slugs={slugs} />
+        <SiteHeader slugs={slugs} draftSlugs={draftSlugs} />
         <main>{children}</main>
         <footer className="page footer">
           <span className="mono">Raven</span>

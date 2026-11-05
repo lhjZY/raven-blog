@@ -1,5 +1,5 @@
 // 本地写作后台：pnpm write，只监听本机。
-// 直接读写 content/posts 下的 Markdown；草稿写 draft: true，构建时跳过。
+// 直接读写 content/posts 下的 Markdown；草稿写 draft: true，不进博客，只列在「手稿」栏目。
 // 文章以 id 标识：中文为 slug，英文为 en/slug，同名即互为译文。
 import { createServer } from "node:http";
 import { randomBytes } from "node:crypto";

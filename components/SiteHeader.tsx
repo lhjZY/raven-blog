@@ -7,28 +7,34 @@ import { dict, htmlLang, localeOf, localize, unlocalize, type Locale } from "@/l
 import RavenLogo from "./RavenLogo";
 import styles from "./SiteHeader.module.css";
 
+type Slugs = Record<string, string[]>;
+
 // The letter in brackets is the item's keyboard shortcut. Paths are without the /en prefix.
 const nav = [
   { key: "B", name: "blog", href: "/", matches: (path: string) => path === "/" || path.startsWith("/posts/") },
   { key: "W", name: "works", href: "/works/", matches: (path: string) => path.startsWith("/works") },
+  { key: "D", name: "drafts", href: "/drafts/", matches: (path: string) => path.startsWith("/drafts") },
   { key: "A", name: "about", href: "/about/", matches: (path: string) => path.startsWith("/about") },
 ] as const;
 
-/** The same page in the other language; a post without a translation falls back to the blog. */
-function switchHref(path: string, slugs: Record<string, string[]>): string {
+/** The same page in the other language; a post or draft without a translation falls back to its list. */
+function switchHref(path: string, slugs: Slugs, draftSlugs: Slugs): string {
   const other: Locale = localeOf(path) === "zh" ? "en" : "zh";
   const base = unlocalize(path);
   const post = base.match(/^\/posts\/([^/]+)\/?$/)?.[1];
-  return localize(other, post && !slugs[other]?.includes(post) ? "/" : base);
+  const draft = base.match(/^\/drafts\/([^/]+)\/?$/)?.[1];
+  if (post && !slugs[other]?.includes(post)) return localize(other, "/");
+  if (draft && !draftSlugs[other]?.includes(draft)) return localize(other, "/drafts/");
+  return localize(other, base);
 }
 
-export default function SiteHeader({ slugs }: { slugs: Record<string, string[]> }) {
+export default function SiteHeader({ slugs, draftSlugs }: { slugs: Slugs; draftSlugs: Slugs }) {
   const path = usePathname();
   const router = useRouter();
   const locale = localeOf(path);
   const base = unlocalize(path);
   const t = dict[locale];
-  const other = switchHref(path, slugs);
+  const other = switchHref(path, slugs, draftSlugs);
 
   // The root layout renders zh-CN; keep <html lang> in step with the page.
   useEffect(() => {

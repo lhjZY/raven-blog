@@ -12,7 +12,7 @@ export interface PostMeta {
   date: string;
   tag: Tag;
   art: ArtName;
-  /** Written in the admin; drafts stay out of the build. */
+  /** Written in the admin; drafts are listed under 手稿 instead of the blog. */
   draft: boolean;
   minutes: number;
 }
@@ -20,4 +20,9 @@ export interface PostMeta {
 /** "2026.10.28" */
 export function formatDate(date: string): string {
   return date.replaceAll("-", ".");
+}
+
+/** A draft with the sections of its outline: a section counts as written once it has text under it. */
+export interface DraftMeta extends PostMeta {
+  outline: { text: string; done: boolean }[];
 }

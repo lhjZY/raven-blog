@@ -1,0 +1,118 @@
+/* 手稿: unfinished articles as handwritten sheets. Colours are Radix (sand, amber, blue, tomato,
+   light scale) because the paper stays light on the dark page. Type sizes: the global 13.5px
+   label, 24px handwriting and 32px handwritten titles. */
+
+.vars {
+  --hand: "Caveat", "Long Cang", cursive;
+  --t-hand: 24px;
+  --t-title: 32px;
+  --row: 36px;
+  --paper: #fdfdfc;
+  --ink: #113264;
+  --faint: #8d8d86;
+  --rule: #acd8fc;
+  --margin: #ec8e7b;
+  --edge: #dad9d6;
+  --accent: #ec8e7b;
+}
+
+/* ---------- The list: pinned sheets ---------- */
+.index { padding-top: 48px; padding-bottom: 96px; }
+.head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 40px; }
+.head h1 { margin: 0; }
+.lede { margin: 0; font: 400 var(--t-hand) / 1.4 var(--hand); color: var(--sand11); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 40px 32px; padding: 8px 0; }
+@media (max-width: 860px) {
+  .grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.sheet {
+  position: relative; display: block; min-height: calc(var(--row) * 9); padding: 0 24px 0 64px;
+  background-color: var(--paper); color: var(--ink); border: 0.5px solid var(--edge);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 35.5px, var(--rule) 35.5px 36px);
+  transform: rotate(var(--tilt, 0deg)); transition: transform 250ms ease-out;
+}
+a.sheet:hover, a.sheet:focus-visible { transform: rotate(0deg); }
+a.sheet:focus-visible { outline: 2px solid var(--amber9); outline-offset: 4px; }
+.sheet::before { content: ""; position: absolute; top: 0; bottom: 0; left: 52px; width: 0.5px; background: var(--margin); }
+.sheet::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 14px; width: 16px; pointer-events: none;
+  background-image:
+    radial-gradient(circle at 8px 8px, var(--sand1) 0 6px, var(--edge) 6px 6.5px, transparent 6.5px),
+    radial-gradient(circle at 8px 8px, var(--sand1) 0 6px, var(--edge) 6px 6.5px, transparent 6.5px),
+    radial-gradient(circle at 8px 8px, var(--sand1) 0 6px, var(--edge) 6px 6.5px, transparent 6.5px);
+  background-size: 16px 16px; background-repeat: no-repeat;
+  background-position: 0 28px, 0 calc(50% - 8px), 0 calc(100% - 44px);
+}
+.date { margin: 0; line-height: var(--row); color: var(--faint); }
+.title {
+  margin: 0; font: 600 var(--t-title) / var(--row) var(--hand);
+  text-decoration: underline wavy var(--margin) 1px; text-underline-offset: 5px;
+}
+.line { margin: 0; min-height: var(--row); font: 400 var(--t-hand) / var(--row) var(--hand); }
+.todo { display: flex; align-items: center; gap: 10px; }
+.progress { text-align: right; padding-right: 8px; color: var(--faint); }
+.clip {
+  position: absolute; top: -10px; right: 28px; z-index: 1; width: 14px; height: 40px;
+  fill: none; stroke: var(--sand9); stroke-width: 1.5; stroke-linecap: round;
+}
+
+.box { width: 22px; height: 22px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.tick { stroke: var(--accent); stroke-width: 2; }
+.circle { position: relative; display: inline-block; padding: 0 4px; }
+.circle svg { position: absolute; inset: 2px -4px; width: calc(100% + 8px); height: calc(100% - 4px); overflow: visible; fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-linecap: round; }
+.circle svg path { vector-effect: non-scaling-stroke; }
+
+/* ---------- One draft: a long handwritten sheet ---------- */
+.paper {
+  position: relative; min-width: 0; padding: 0 40px var(--row) 64px;
+  background-color: var(--paper); color: var(--ink); border: 0.5px solid var(--edge);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 35.5px, var(--rule) 35.5px 36px);
+}
+.paper::before { content: ""; position: absolute; top: 0; bottom: 0; left: 52px; width: 0.5px; background: var(--margin); }
+.paper::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 14px; width: 16px; pointer-events: none;
+  background-image: radial-gradient(circle at 8px 8px, var(--sand1) 0 6px, var(--edge) 6px 6.5px, transparent 6.5px);
+  background-size: 16px 756px; background-repeat: repeat-y; background-position: 0 28px;
+}
+.meta { display: flex; align-items: center; gap: 20px; height: var(--row); margin: 0; color: var(--faint); }
+.meta .circle { font: 400 var(--t-hand) / var(--row) var(--hand); color: var(--ink); }
+.name {
+  margin: 0; font: 600 var(--t-title) / var(--row) var(--hand);
+  text-decoration: underline wavy var(--margin) 1px; text-underline-offset: 5px;
+}
+.back { display: block; margin-top: var(--row); font: 400 var(--t-hand) / var(--row) var(--hand); color: var(--faint); transition: color 250ms ease-out; }
+.back:hover { color: var(--ink); }
+@media (max-width: 860px) {
+  .paper { padding: 0 20px var(--row) 48px; }
+  .paper::before { left: 36px; }
+  .paper::after { left: 8px; }
+}
+
+/* The article text: handwriting on the ruled lines, every block a whole number of rows tall. */
+.paper .writing { margin-top: var(--row); font: 400 var(--t-hand) / var(--row) var(--hand); }
+.paper .writing > * { margin: 0 0 var(--row); }
+.paper .writing h2 {
+  margin: 0; font: 600 var(--t-title) / var(--row) var(--hand); letter-spacing: 0;
+  text-decoration: underline wavy var(--margin) 1px; text-underline-offset: 5px;
+}
+.paper .writing h3 { margin: 0; font: 600 var(--t-hand) / var(--row) var(--hand); }
+.paper .writing ul, .paper .writing ol { padding-left: 1.4em; }
+.paper .writing li { margin: 0; }
+.paper .writing a { text-decoration-color: var(--margin); }
+.paper .writing a:hover { text-decoration-color: var(--ink); }
+.paper .writing code {
+  font: 15.75px / var(--row) ui-monospace, "SF Mono", Menlo, monospace;
+  background: color-mix(in srgb, var(--rule) 40%, transparent); color: var(--ink); border-radius: 0; padding: 1px 4px;
+}
+.paper .writing pre {
+  margin: 0 0 var(--row); padding: 0; border: 0; border-radius: 0; background: none; color: var(--ink);
+  font: 15.75px / var(--row) ui-monospace, "SF Mono", Menlo, monospace;
+}
+.paper .writing pre code { background: none; padding: 0; line-height: var(--row); }
+.paper .writing blockquote { margin: 0 0 var(--row); padding: 0 0 0 24px; background: none; border-radius: 0; color: var(--faint); }
+.paper .writing table { font: 15.75px / var(--row) ui-monospace, "SF Mono", Menlo, monospace; }
+.paper .writing th, .paper .writing td { padding: 0 12px 0 0; border-bottom: 0.5px solid var(--rule); }
+.paper .writing th { color: var(--faint); font-size: 13.5px; }
+.paper .writing hr { border: 0; border-top: 0.5px solid var(--margin); }
+.paper .writing img { border: 0.5px solid var(--edge); }

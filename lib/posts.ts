@@ -3,11 +3,11 @@ import path from "node:path";
 import { Marked } from "marked";
 import type { ArtName } from "@/components/art/PostArt";
 import type { Locale } from "./i18n";
-import type { PostMeta, Tag } from "./post-meta";
+import type { DraftMeta, PostMeta, Tag } from "./post-meta";
 
-export { formatDate, type PostMeta, type Tag } from "./post-meta";
+export { formatDate, type DraftMeta, type PostMeta, type Tag } from "./post-meta";
 
-export interface Post extends PostMeta {
+export interface Post extends DraftMeta {
   html: string;
   /** The h2 sections, for the table of contents. */
   headings: { id: string; text: string }[];
@@ -17,17 +17,23 @@ export interface Post extends PostMeta {
 const root = path.join(process.cwd(), "content/posts");
 const directory = (locale: Locale) => (locale === "en" ? path.join(root, "en") : root);
 
-// Drafts show in `pnpm dev` for proofreading and are left out of the build.
-const showDrafts = process.env.NODE_ENV !== "production";
-
-/** Posts in one language, newest first. */
+/** Published posts in one language, newest first. */
 export function getPosts(locale: Locale): PostMeta[] {
+  return list(locale, false).map(({ outline: _outline, ...meta }) => meta);
+}
+
+/** Unfinished posts in one language, newest first. They live under 手稿, not in the blog. */
+export function getDrafts(locale: Locale): DraftMeta[] {
+  return list(locale, true);
+}
+
+function list(locale: Locale, drafts: boolean): DraftMeta[] {
   if (!fs.existsSync(directory(locale))) return [];
   return fs
     .readdirSync(directory(locale))
     .filter((file) => file.endsWith(".md"))
     .map((file) => readPost(locale, file.replace(/\.md$/, "")))
-    .filter((post) => showDrafts || !post.draft)
+    .filter((post) => post.draft === drafts)
     .map(({ html: _html, headings: _headings, ...meta }) => meta)
     .sort((a, b) => b.date.localeCompare(a.date));
 }
@@ -57,9 +63,21 @@ function readPost(locale: Locale, slug: string): Post {
     art: fields.art as ArtName,
     draft: fields.draft === "true",
     minutes: readingMinutes(locale, body),
+    outline: outlineOf(body),
     html,
     headings,
   };
+}
+
+/** The h2 sections; one with no text under it is not written yet. */
+function outlineOf(body: string) {
+  return body
+    .split(/^## +/m)
+    .slice(1)
+    .map((section) => {
+      const [heading, ...rest] = section.split("\n");
+      return { text: heading.trim(), done: rest.join("\n").trim().length > 0 };
+    });
 }
 
 // About 400 characters a minute for Chinese and 200 words for English, counting code as text.

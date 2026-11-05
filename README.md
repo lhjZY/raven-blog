@@ -15,7 +15,7 @@ pnpm write    # 写作后台 http://127.0.0.1:4341
 
 运行 `pnpm write`，在后台点击「新建」，填写标题、摘要和正文。改动自动保存到 `content/posts/`，`⌘S` 立即保存。
 
-- 新文章是草稿，头部带 `draft: true`：`pnpm dev` 里能看到，`pnpm build` 会跳过。点击「发布」去掉草稿标记，日期更新为当天；「更多」里可以撤回为草稿或删除草稿。
+- 新文章是草稿，头部带 `draft: true`：不会出现在博客，而是列在「手稿」栏目（`/drafts/`），以手写稿纸的样式展示，可以点进去阅读。点击「发布」去掉草稿标记，日期更新为当天，文章从手稿移到博客；「更多」里可以撤回为草稿或删除草稿。
 - 「文章信息」设置网址、语言、日期、分类和插图。网址就是文件名，草稿阶段可以修改，发布后固定。
 - 「更多」里的「添加英文版」以同名文件新建英文草稿，沿用日期、分类和插图；已有译文时变为「打开英文版」。
 - 「分屏」和「预览」使用博客的 `globals.css`，与文章页排版一致。
@@ -32,6 +32,7 @@ pnpm write    # 写作后台 http://127.0.0.1:4341
 - `lib/posts.ts`：读取文章、渲染 Markdown、收集二级标题做目录、估算阅读时间。
 - `components/art/`：四幅动画插图（琥珀色方块上的线稿）和列表里的小图标。新文章想要新插图，在 `PostArt.tsx` 里加一个。
 - `components/RavenLogo.tsx`：页头的小乌鸦，会眨眼，悬停时跳一下。
-- 页面：`app/page.tsx` 博客，`app/works/` 作品，`app/about/` 关于，`app/posts/[slug]/` 文章。
+- 页面：`app/page.tsx` 博客，`app/works/` 作品，`app/drafts/` 手稿，`app/about/` 关于，`app/posts/[slug]/` 文章，`app/drafts/[slug]/` 手稿文章。
+- `components/pages/DraftsPage.tsx` 和 `DraftPostPage.tsx`：手稿列表（活页纸，带提纲和进度）与手稿文章（手写稿纸）。提纲取自文章的二级标题，标题下已有文字算写完。手写字体 Caveat 和 Long Cang 从 Google Fonts 加载，连不上时退回系统手写体。
 
-按 B、W、A 在三个栏目间切换，按 L 切换语言。动画在系统开启“减少动态效果”时停止。
+按 B、W、D、A 在四个栏目间切换，按 L 切换语言。动画在系统开启“减少动态效果”时停止。
